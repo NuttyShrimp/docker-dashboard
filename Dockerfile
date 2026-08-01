@@ -11,26 +11,6 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/api/main.go
 RUN CGO_ENABLED=0 GOOS=linux go build -o migrate ./migrate.go
 
-FROM node:26.5.0-alpine3.24 AS base-frontend
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-
-RUN npm install -g pnpm@11.18.0
-COPY ./ui /frontend/ui
-WORKDIR /frontend
-
-FROM base-frontend AS frontend-prod-deps
-WORKDIR /frontend/ui
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
-
-FROM base-frontend AS frontend-build
-
-WORKDIR /frontend/ui
-ARG SENTRY_AUTH_TOKEN
-
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm run build
-
 # Last stage: discard everything except our executables.
 FROM alpine:3.24 AS prod
 
@@ -39,15 +19,7 @@ WORKDIR /app
 
 # Copy our executable and our built React application.
 COPY --from=backend-builder /app/server .
-COPY --from=backend-builder /app/migrate .
-COPY --from=frontend-build /frontend/public ./public
 COPY ./config ./config
-
-# This is for sentry sourcemaps
-COPY ./cmd ./cmd
-COPY ./db ./db
-COPY ./pkg ./pkg
-COPY ./internal ./internal
 
 ENV APP_ENV=production
 
