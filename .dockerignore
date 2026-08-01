@@ -1,0 +1,12 @@
+.git/
+.github/
+/public/
+**/node_modules/
+**/.pnpm-store/
+.dockerignore
+.gitignore
+Dockerfile
+Dockerfile.dev
+README.md
+main
+seed

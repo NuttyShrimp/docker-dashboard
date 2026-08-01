@@ -1,0 +1,38 @@
+name: Frontend Lint
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  format-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 26.5.0
+
+      - name: Install safe-chain
+        run: curl -fsSL https://github.com/AikidoSec/safe-chain/releases/latest/download/install-safe-chain.sh | sh -s -- --ci
+
+      - name: Install pnpm
+        run: npm install -g pnpm@11.18.0
+
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: ui/
+
+      - name: Run format & lint
+        run: pnpm run lint
+        working-directory: ui/
+
+      - name: Run typecheck
+        run: pnpm run typecheck
+        working-directory: ui/

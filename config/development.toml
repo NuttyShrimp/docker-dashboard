@@ -1,0 +1,5 @@
+[app]
+name = "docker-dashboard"
+
+[server]
+port = 3001
