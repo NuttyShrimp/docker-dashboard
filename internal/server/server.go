@@ -45,6 +45,8 @@ func New() *Server {
 		}))
 	}
 
+	routers.NewViews(app, service)
+
 	// Register routes
 	api := app.Group("/api")
 	routers.NewResources(api, service)

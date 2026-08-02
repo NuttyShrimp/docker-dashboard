@@ -1,6 +1,7 @@
 all: build
 
 build:
+	@go tool templ generate
 	@go build -o main cmd/api/main.go
 
 run:
