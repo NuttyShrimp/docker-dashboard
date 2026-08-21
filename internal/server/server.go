@@ -8,7 +8,6 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3/middleware/recover"
-	"github.com/nuttyshrimp/docker-dashboard/internal/database/repository"
 	routers "github.com/nuttyshrimp/docker-dashboard/internal/server/api"
 	middlewares "github.com/nuttyshrimp/docker-dashboard/internal/server/middlewares"
 	"github.com/nuttyshrimp/docker-dashboard/internal/server/service"
@@ -21,10 +20,7 @@ type Server struct {
 	Addr string
 }
 
-func New() *Server {
-	repo := repository.New()
-	service := service.New(repo)
-
+func New(service *service.Service) *Server {
 	// Construct app
 	app := fiber.New(fiber.Config{
 		BodyLimit:         20 * 1024 * 1024,
