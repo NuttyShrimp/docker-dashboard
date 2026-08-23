@@ -39,6 +39,21 @@ func (r *Resource) Get(name, project string) (*model.Resource, bool) {
 	return resource, true
 }
 
+func (r *Resource) GetPortToResource() map[int]*model.Resource {
+	mappedResources := make(map[int]*model.Resource)
+	subdomains := r.subdomain.GetAll()
+
+	for _, domain := range subdomains {
+		for _, resource := range domain.Resources {
+			for _, port := range resource.Ports {
+				mappedResources[port] = resource
+			}
+		}
+	}
+
+	return mappedResources
+}
+
 func (r *Resource) Create(name, project string) (*model.Resource, error) {
 	subdomain, ok := r.subdomain.GetByName(project)
 	if !ok {

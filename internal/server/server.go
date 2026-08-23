@@ -52,7 +52,7 @@ func New(service *service.Service) *Server {
 		return c.SendStatus(404)
 	})
 
-	port := config.GetDefaultInt("server.port", 8000)
+	port := config.GetDefaultInt("server.port", 3000)
 	host := config.GetDefaultString("server.host", "0.0.0.0")
 
 	srv := &Server{

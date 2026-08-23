@@ -24,5 +24,5 @@ COPY ./config ./config
 ENV APP_ENV=production
 
 # Declare entrypoints and activation commands.
-EXPOSE 8000
+EXPOSE 3000
 ENTRYPOINT ["./server"]

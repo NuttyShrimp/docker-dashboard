@@ -1,7 +1,50 @@
 package views
 
-templ List() {
+import "github.com/nuttyshrimp/docker-dashboard/internal/database/model"
+import "maps"
+import "slices"
+
+templ List(resourceMap map[int]*model.Resource) {
+	{{ sortedPorts := slices.Sorted((maps.Keys(resourceMap))) }}
 	<div>
 		<h1>Port list</h1>
+		<table>
+			<thead>
+				<tr>
+					<th>
+						Port
+					</th>
+					<th>
+						Resource - Project
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				if len(sortedPorts) > 0 && sortedPorts[0] != 1 {
+					<tr>
+						<td>1 - { sortedPorts[0] - 1 }</td>
+						<td></td>
+					</tr>
+				}
+				for i, port := range sortedPorts {
+					<tr>
+						<td>{ port }</td>
+						<td>{ resourceMap[port].Name } - { resourceMap[port].Subdomain.Name }</td>
+					</tr>
+					if (len(sortedPorts) - 1 > i) {
+						<tr>
+							<td>{ port } - { sortedPorts[i + 1] }</td>
+							<td></td>
+						</tr>
+					}
+				}
+				if (sortedPorts[len(sortedPorts) - 1] != 65535) {
+					<tr>
+						<td>{ sortedPorts[len(sortedPorts) - 1] } - 65535</td>
+						<td></td>
+					</tr>
+				}
+			</tbody>
+		</table>
 	</div>
 }

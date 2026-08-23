@@ -6,14 +6,25 @@ import (
 )
 
 type Resources struct {
-	router  fiber.Router
-	service *service.Service
+	router    fiber.Router
+	service   *service.Service
+	subdomain *service.Subdomain
 }
 
 func NewResources(router fiber.Router, service *service.Service) *Resources {
 	api := &Resources{
-		router:  router.Group("/resources"),
-		service: service,
+		router:    router.Group("/resources"),
+		service:   service,
+		subdomain: service.NewSubdomain(),
 	}
+	api.Routes()
 	return api
+}
+
+func (r *Resources) Routes() {
+	r.router.Get("/", r.handleGetAll)
+}
+
+func (r *Resources) handleGetAll(c fiber.Ctx) error {
+	return c.JSON(r.subdomain.GetAll())
 }

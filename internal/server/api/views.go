@@ -8,14 +8,16 @@ import (
 )
 
 type Views struct {
-	router  fiber.Router
-	service *service.Service
+	router   fiber.Router
+	service  *service.Service
+	resource *service.Resource
 }
 
 func NewViews(router fiber.Router, service *service.Service) *Views {
 	api := &Views{
-		router,
-		service,
+		router:   router,
+		service:  service,
+		resource: service.NewResource(),
 	}
 
 	api.RegisterRoutes()
@@ -28,6 +30,6 @@ func (v *Views) RegisterRoutes() {
 }
 
 func (v *Views) handleIndex(c fiber.Ctx) error {
-
-	return ui.Render(c, views.List())
+	mappedResources := v.resource.GetPortToResource()
+	return ui.Render(c, views.List(mappedResources))
 }
