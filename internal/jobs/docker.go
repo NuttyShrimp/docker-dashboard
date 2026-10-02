@@ -37,6 +37,7 @@ func (d *DockerJob) Run(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	// nolint:errcheck // we don't care if the client is closed correctly
 	defer apiClient.Close()
 
 	result, err := apiClient.ContainerList(ctx, client.ContainerListOptions{})
