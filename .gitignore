@@ -36,3 +36,4 @@ seed
 
 # Logs
 logs/
+/node_modules

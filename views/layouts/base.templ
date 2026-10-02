@@ -1,9 +1,13 @@
 package layouts
 
-templ BaseLayout() {
+templ BaseLayout(page templ.Component) {
 	<html>
 		<head>
 			<title>Docker dashboard</title>
+			<link href="./output.css" rel="stylesheet"/>
 		</head>
+		<body>
+			@page
+		</body>
 	</html>
 }

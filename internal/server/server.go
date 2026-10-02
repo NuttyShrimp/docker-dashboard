@@ -3,11 +3,13 @@ package server
 
 import (
 	"fmt"
+	"time"
 
 	zapfiber "github.com/gofiber/contrib/v3/zap"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3/middleware/recover"
+	"github.com/gofiber/fiber/v3/middleware/static"
 	routers "github.com/nuttyshrimp/docker-dashboard/internal/server/api"
 	middlewares "github.com/nuttyshrimp/docker-dashboard/internal/server/middlewares"
 	"github.com/nuttyshrimp/docker-dashboard/internal/server/service"
@@ -51,6 +53,18 @@ func New(service *service.Service) *Server {
 	app.All("/api*", func(c fiber.Ctx) error {
 		return c.SendStatus(404)
 	})
+
+	app.Get("/*", static.New("./public", static.Config{
+		Browse:        false,
+		MaxAge:        3600,
+		CacheDuration: 10 * time.Second,
+		NotFoundHandler: func(c fiber.Ctx) error {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": "asset not found",
+				"path":  c.Path(),
+			})
+		},
+	}))
 
 	port := config.GetDefaultInt("server.port", 3000)
 	host := config.GetDefaultString("server.host", "0.0.0.0")
