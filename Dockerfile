@@ -1,27 +1,49 @@
-# First stage: Get Golang image from DockerHub.
+# Backend build stage
 FROM golang:1.26.5-alpine3.24 AS backend-builder
 
-# Set our working directory for this stage.
 WORKDIR /app
 
-# Copy all of our files.
-COPY . .
+# Cache Go modules
+COPY go.mod go.sum ./
+RUN go mod download
 
-# Get and install all dependencies.
+# Copy source code and compile backend binary
+COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/api/main.go
 
-# Last stage: discard everything except our executables.
-FROM alpine:3.24 AS prod
+# Frontend / CSS build stage
+FROM node:24-alpine AS frontend-builder
 
-# Set our next working directory.
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN corepack enable
+
 WORKDIR /app
 
-# Copy our executable and our built React application.
+# Cache dependencies
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* ./
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# Copy assets and views for Tailwind scanning and compilation
+COPY assets ./assets
+COPY views ./views
+
+# Build CSS with Tailwind CLI via pnpm
+RUN pnpm run build:css
+
+# Final production stage
+FROM alpine:3.24 AS prod
+
+WORKDIR /app
+
+# Copy server executable and static assets
 COPY --from=backend-builder /app/server .
+COPY --from=frontend-builder /app/public ./public
 COPY ./config ./config
 
 ENV APP_ENV=production
 
-# Declare entrypoints and activation commands.
 EXPOSE 3000
 ENTRYPOINT ["./server"]

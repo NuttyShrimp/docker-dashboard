@@ -7,44 +7,46 @@ import "slices"
 templ List(resourceMap map[int]*model.Resource) {
 	{{ sortedPorts := slices.Sorted((maps.Keys(resourceMap))) }}
 	<div>
-		<h1>Port list</h1>
-		<table>
-			<thead>
-				<tr>
-					<th>
-						Port
-					</th>
-					<th>
-						Resource - Project
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				if len(sortedPorts) > 0 && sortedPorts[0] != 1 {
+		<h1 class="text-2xl md:text-3xl lg:text-4xl font-bold">Port list</h1>
+		<div class="overflow-x-auto">
+			<table class="table">
+				<thead>
 					<tr>
-						<td>1 - { sortedPorts[0] - 1 }</td>
-						<td></td>
+						<th>
+							Port
+						</th>
+						<th>
+							Resource - Project
+						</th>
 					</tr>
-				}
-				for i, port := range sortedPorts {
-					<tr>
-						<td>{ port }</td>
-						<td>{ resourceMap[port].Name } - { resourceMap[port].Subdomain.Name }</td>
-					</tr>
-					if (len(sortedPorts) - 1 > i) {
+				</thead>
+				<tbody>
+					if len(sortedPorts) > 0 && sortedPorts[0] != 1 {
 						<tr>
-							<td>{ port } - { sortedPorts[i + 1] }</td>
+							<td>1 - { sortedPorts[0] - 1 }</td>
 							<td></td>
 						</tr>
 					}
-				}
-				if (sortedPorts[len(sortedPorts) - 1] != 65535) {
-					<tr>
-						<td>{ sortedPorts[len(sortedPorts) - 1] } - 65535</td>
-						<td></td>
-					</tr>
-				}
-			</tbody>
-		</table>
+					for i, port := range sortedPorts {
+						<tr>
+							<td>{ port }</td>
+							<td>{ resourceMap[port].Name } - { resourceMap[port].Subdomain.Name }</td>
+						</tr>
+						if (len(sortedPorts) - 1 > i) {
+							<tr>
+								<td>{ port } - { sortedPorts[i + 1] }</td>
+								<td></td>
+							</tr>
+						}
+					}
+					if (len(sortedPorts) > 0 && sortedPorts[len(sortedPorts) - 1] != 65535) {
+						<tr>
+							<td>{ sortedPorts[len(sortedPorts) - 1] } - 65535</td>
+							<td></td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
 	</div>
 }

@@ -1,6 +1,7 @@
 all: build
 
 build:
+	@pnpm build:css
 	@go tool templ generate
 	@go build -o main cmd/api/main.go
 
