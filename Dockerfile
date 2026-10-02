@@ -9,7 +9,6 @@ COPY . .
 
 # Get and install all dependencies.
 RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/api/main.go
-RUN CGO_ENABLED=0 GOOS=linux go build -o migrate ./migrate.go
 
 # Last stage: discard everything except our executables.
 FROM alpine:3.24 AS prod
